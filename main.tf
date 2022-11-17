@@ -175,7 +175,7 @@ resource "aws_lb_listener" "app" {
 
 resource "aws_lb_target_group" "app" {
   for_each = var.services
-  name     = "app-tg-${each.key}"
+  name     = "app-tg-${each.value.name}"
   port     = each.value.port
   protocol = "HTTP"
   vpc_id   = data.aws_subnet.subnet[each.key].vpc_id
