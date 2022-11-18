@@ -141,6 +141,7 @@ resource "aws_security_group_rule" "lb" {
 
 # ## Load Balancer HTTP
 resource "aws_lb" "app_http" {
+  count = length(var.services) == 0 ? 0 : 1
   name_prefix               = "app-lb"
   internal           = false
   load_balancer_type = "application"
@@ -156,7 +157,7 @@ resource "aws_lb" "app_http" {
 
 resource "aws_lb_listener" "app" {
   for_each = var.services
-  load_balancer_arn = aws_lb.app_http.arn
+  load_balancer_arn = aws_lb.app_http[0].arn
   port              = each.value.port
   protocol          = "HTTP"
 
@@ -193,5 +194,5 @@ output "instance" {
 }
 
 output "app_lb" {
-  value = {for ip,s in var.services : ip => "${aws_lb.app_http.dns_name}:${s.port}"}
+  value = {for ip,s in var.services : ip => "${aws_lb.app_http[0].dns_name}:${s.port}"}
 }
